@@ -42,7 +42,14 @@
   padding: 20px;
   border-radius: 10px;
   min-width: 30%;
+  max-width: 50%;
   position: relative;
+}
+@media (max-width:768px){
+  .acf-popup-content{
+    min-width: 30%;
+    max-width: 85%;
+  }
 }
 
 .acf-popup-content .acf-popup-title{

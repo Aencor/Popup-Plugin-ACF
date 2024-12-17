@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-  // Función para manejar cookies
+  // Cookie functionality
   function setCookie(name, value, days) {
     const date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -19,7 +19,7 @@ jQuery(document).ready(function ($) {
     return null;
   }
 
-  // Mostrar el pop-up si no existe la cookie
+  // Show the pop up if the cookie doesn't exists
   if (!getCookie('popup_closed')) {
     const popupOverlay = $('<div class="acf-popup-overlay"></div>');
     const popupContent = $(`
@@ -37,10 +37,10 @@ jQuery(document).ready(function ($) {
     popupOverlay.append(popupContent);
     $('body').append(popupOverlay);
 
-    // Mostrar el pop-up
+    // Show Pop Up
     popupOverlay.fadeIn();
 
-    // Cerrar el pop-up
+    // Close Pop Up
     $('.acf-popup-close, .acf-popup-overlay').on('click', function (e) {
       if ($(e.target).is('.acf-popup-close') || $(e.target).is('.acf-popup-overlay')) {
         popupOverlay.fadeOut();
