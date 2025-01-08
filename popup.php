@@ -8,132 +8,199 @@
  */
 
  add_action('acf/init', function() {
-  if (function_exists('acf_add_options_page')) {
-      // Create the Pop Up Settings page if it doesn't exists already
-      acf_add_options_page([
-          'page_title' => 'Pop-up Settings',
-          'menu_title' => 'Pop-up Settings',
-          'menu_slug'  => 'popup-settings',
-          'capability' => 'edit_posts',
-          'redirect'   => false,
-      ]);
-  }
-
-  if (function_exists('acf_add_local_field_group')) {
-      // Create the Fields
-      acf_add_local_field_group([
-          'key' => 'group_popup_settings',
-          'title' => 'Pop-up Settings',
-          'fields' => [
+    if (function_exists('acf_add_options_page')) {
+        // Create the Pop Up Settings page if it doesn't exist already
+        acf_add_options_page([
+            'page_title' => 'Pop-up Settings',
+            'menu_title' => 'Pop-up Settings',
+            'menu_slug'  => 'popup-settings',
+            'capability' => 'edit_posts',
+            'redirect'   => false,
+        ]);
+    }
+  
+    if (function_exists('acf_add_local_field_group')) {
+        // Create the Fields
+        acf_add_local_field_group([
+            'key' => 'group_popup_settings',
+            'title' => 'Pop-up Settings',
+            'fields' => [
                 [
-                    'key' => 'field_popup_all_pages',
-                    'label' => 'All Pages',
-                    'name' => 'popup_all_pages',
-                    'type' => 'true_false',
-                    'instructions' => 'Check this box to show the Pop-up on all pages.',
+                    'key' => 'field_popups_repeater',
+                    'label' => 'Pop-ups',
+                    'name' => 'popups',
+                    'type' => 'repeater',
+                    'instructions' => 'Add and configure the pop-ups.',
                     'required' => 0,
-                    'default_value' => 0,
-                    'ui' => 1,
+                    'sub_fields' => [
+                        [
+                            'key' => 'field_popup_id',
+                            'label' => 'Pop-up ID',
+                            'name' => 'popup_id',
+                            'type' => 'text',
+                            'instructions' => 'Enter a unique ID for this pop-up.',
+                            'required' => 1,
+                        ],
+                        [
+                            'key' => 'field_popup_style',
+                            'label' => 'Style',
+                            'name' => 'popup_style',
+                            'type' => 'select',
+                            'instructions' => 'Select the style for this pop-up.',
+                            'required' => 1,
+                            'choices' => [
+                                'style_1' => 'Style 1',
+                                'style_2' => 'Style 2',
+                            ],
+                            'default_value' => 'style_1',
+                        ],
+                        [
+                            'key' => 'field_popup_all_pages',
+                            'label' => 'All Pages',
+                            'name' => 'popup_all_pages',
+                            'type' => 'true_false',
+                            'instructions' => 'Show this Pop-up on all pages.',
+                            'default_value' => 0,
+                            'ui' => 1,
+                        ],
+                        [
+                            'key' => 'field_popup_pages',
+                            'label' => 'Select Pop Up Location',
+                            'name' => 'popup_pages',
+                            'type' => 'relationship',
+                            'instructions' => 'Select the pages where this pop-up will be shown.',
+                            'post_type' => ['page', 'post'],
+                            'filters' => ['search', 'post_type'],
+                            'return_format' => 'id',
+                            'conditional_logic' => [
+                                [
+                                    [
+                                        'field' => 'field_popup_all_pages',
+                                        'operator' => '!=',
+                                        'value' => '1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        [
+                            'key' => 'field_popup_title',
+                            'label' => 'Pop-up Title',
+                            'name' => 'popup_title',
+                            'type' => 'text',
+                            'required' => 1,
+                        ],
+                        [
+                            'key' => 'field_popup_content',
+                            'label' => 'Pop-up Content',
+                            'name' => 'popup_content',
+                            'type' => 'wysiwyg',
+                            'required' => 1,
+                        ],
+                        [
+                            'key' => 'field_popup_button_link',
+                            'label' => 'Pop-up Button',
+                            'name' => 'popup_button_link',
+                            'type' => 'link',
+                            'instructions' => 'Add a button to the Pop-up (Optional).',
+                            'return_format' => 'array',
+                        ],
+                        [
+                            'key' => 'field_popup_cookie_expiration',
+                            'label' => 'Cookie Duration (days)',
+                            'name' => 'popup_cookie_expiration',
+                            'type' => 'number',
+                            'instructions' => 'Set how many days the cookie will last.',
+                            'default_value' => 7,
+                            'min' => 1,
+                        ],
+                    ],
+                    'min' => 0,
+                    'layout' => 'block',
+                    'button_label' => 'Add Pop-up',
                 ],
-              [
-                  'key' => 'field_popup_pages',
-                  'label' => 'Select Pop Up Location',
-                  'name' => 'popup_pages',
-                  'type' => 'relationship',
-                  'instructions' => 'Select the pages where the pop up will be shown.',
-                  'required' => 1,
-                  'post_type' => ['page'],
-                  'filters' => ['search', 'post_type'],
-                  'return_format' => 'id',
-                  'conditional_logic' => [
-                      [
-                          [
-                              'field' => 'field_popup_all_pages', // Clave del campo "All Pages"
-                              'operator' => '!=',
-                              'value' => '1', // Se muestra si "All Pages" NO está marcado
-                          ],
-                      ],
-                  ],
-              ],
-              [
-                  'key' => 'field_popup_title',
-                  'label' => 'Pop-up Title',
-                  'name' => 'popup_title',
-                  'type' => 'text',
-                  'instructions' => 'Write the title of the Pop-up that will be shown.',
-                  'required' => 1,
-              ],
-              [
-                  'key' => 'field_popup_content',
-                  'label' => 'Pop-up Content',
-                  'name' => 'popup_content',
-                  'type' => 'wysiwyg',
-                  'instructions' => 'Insert here the Pop-up content.',
-                  'required' => 1,
-              ],
-              [
-                  'key' => 'field_popup_button_link',
-                  'label' => 'Pop-up Button',
-                  'name' => 'popup_button_link',
-                  'type' => 'link',
-                  'instructions' => 'Add a button to the Pop-up (Optional).',
-                  'required' => 0,
-                  'return_format' => 'array',
-              ],
-              [
-                  'key' => 'field_popup_cookie_expiration',
-                  'label' => 'Cookie Duration (days)',
-                  'name' => 'popup_cookie_expiration',
-                  'type' => 'number',
-                  'instructions' => 'Set how many days do the cookie will last.',
-                  'default_value' => 7,
-                  'required' => 0,
-                  'min' => 1,
-              ],
-          ],
-          'location' => [
-              [
-                  [
-                      'param' => 'options_page',
-                      'operator' => '==',
-                      'value' => 'popup-settings',
-                  ],
-              ],
-          ],
-      ]);
-  }
+            ],
+            'location' => [
+                [
+                    [
+                        'param' => 'options_page',
+                        'operator' => '==',
+                        'value' => 'popup-settings',
+                    ],
+                ],
+            ],
+        ]);
+    }
 });
+
 
 add_action('wp_enqueue_scripts', function() {
-  // Get the Pop up data
-  $popup_all_pages = get_field('popup_all_pages', 'option');
-  $popup_pages = get_field('popup_pages', 'option');
-  $popup_title = get_field('popup_title', 'option');
-  $popup_content = get_field('popup_content', 'option');
-  $popup_button_link = get_field('popup_button_link', 'option');
-  $cookie_expiration = get_field('popup_cookie_expiration', 'option');
+    $popups = get_field('popups', 'option');
   
-  $show_popup = $popup_all_pages || ($popup_pages && is_page($popup_pages));
+    if ($popups) {
+        $popup_data = [];
+        foreach ($popups as $popup) {
+            // Obtener el enlace del botón, si está presente
+            $popup_button_link = $popup['popup_button_link'] ?? [];
+            
+            // Obtener los slugs de las páginas seleccionadas
+            $page_slugs = [];
+            if (!empty($popup['popup_pages'])) {
+                $page_ids = $popup['popup_pages']; // IDs de las páginas seleccionadas
+                // Obtener las páginas completas por ID
+                $pages = get_posts([
+                    'post_type' => array('page', 'post'),
+                    'post__in' => $page_ids,  // Filtrar por los IDs
+                    'posts_per_page' => -1,    // Obtener todas las páginas
+                    'fields' => 'ids'          // Solo obtener los IDs
+                ]);
+                
+                // Obtener el slug de cada página
+                foreach ($pages as $page_id) {
+                    $page = get_post($page_id);
+                    if ($page) {
+                        $page_slugs[] = $page->post_name;  // Guardar el slug
+                    }
+                }
+            }
 
-  if ($show_popup && $popup_title && $popup_content) {
-      wp_enqueue_style('acf-popup-style', plugin_dir_url(__FILE__) . 'assets/style.css');
-      wp_enqueue_script('acf-popup-script', plugin_dir_url(__FILE__) . 'assets/script.js', ['jquery'], '1.0', true);
+            // Agregar la información del pop-up al array
+            $popup_data[] = [
+                'id' => $popup['popup_id'],
+                'title' => $popup['popup_title'],
+                'style' => $popup['popup_style'],
+                'content' => $popup['popup_content'],
+                'buttonLabel' => $popup_button_link['title'] ?? '',
+                'buttonUrl' => $popup_button_link['url'] ?? '',
+                'buttonTarget' => $popup_button_link['target'] ?? '',
+                'cookieExpiration' => $popup['popup_cookie_expiration'] ? intval($popup['popup_cookie_expiration']) : 7,
+                'allPages' => !empty($popup['popup_all_pages']), // Devuelve `true` si está activado
+                'pages' => $page_slugs, // Aquí pasamos los slugs de las páginas seleccionadas
+            ];
+        }
 
-      // Prepare button and cookie options
-      $button_label = $popup_button_link['title'] ?? '';
-      $button_url = $popup_button_link['url'] ?? '';
-      $button_target = $popup_button_link['target'] ?? '';
+        // Cargar el script
+        wp_register_script(
+            'acf-popup-script',
+            plugin_dir_url(__FILE__) . 'assets/script.js', // Ruta válida para el script
+            ['jquery'], // Dependencias
+            '1.0',
+            true // Cargar en el footer
+        );
+        // Añadir el ID del post actual para usarlo en JS
+        $post_id = get_the_ID(); // Obtén el ID del post o página actual
+        wp_localize_script('acf-popup-script', 'popupData', [
+            'post_id' => $post_id, // Aquí pasas el post ID
+            'popup_data' => $popup_data // Y los datos del pop-up como antes
+        ]);
+        wp_enqueue_script('acf-popup-script');
+        // Cargar el estilo
+        wp_register_style(
+            'acf-popup-style',
+            plugin_dir_url(__FILE__) . 'assets/style.css', // Ruta válida para el archivo CSS
+            [], // Dependencias (si las hay)
+            '1.0' // Versión del archivo CSS
+        );
 
-      wp_localize_script('acf-popup-script', 'popupData', [
-          'title' => $popup_title,
-          'content' => $popup_content,
-          'buttonLabel' => $button_label,
-          'buttonUrl' => $button_url,
-          'buttonTarget' => $button_target,
-          'cookieExpiration' => $cookie_expiration ? intval($cookie_expiration) : 7, // Default 7 días
-      ]);
-  }
+        wp_enqueue_style('acf-popup-style');
+    }
 });
-
-
-
